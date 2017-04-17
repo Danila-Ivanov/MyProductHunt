@@ -1,0 +1,9 @@
+<resources>
+    <string name="app_name">MyProductHunter</string>
+
+    <string name="no_posts">Нет записей \n на сегодня</string>
+    <string name="title_activity_post">PostActivity</string>
+    <string name="action_settings">Settings</string>
+
+    <string name="btn_get_it">Get it</string>
+</resources>
