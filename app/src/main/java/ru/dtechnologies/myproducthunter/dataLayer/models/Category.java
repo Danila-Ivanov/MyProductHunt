@@ -1,11 +1,8 @@
-package ru.dtechnologies.myproducthunter.core.models;
+package ru.dtechnologies.myproducthunter.dataLayer.models;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
-/**
- * Created by Danila on 15.04.2017.
- */
 public class Category {
 
     private int id;

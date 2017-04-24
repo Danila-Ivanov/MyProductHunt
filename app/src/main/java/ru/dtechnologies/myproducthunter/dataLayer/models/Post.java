@@ -1,4 +1,6 @@
-package ru.dtechnologies.myproducthunter.core.models;
+package ru.dtechnologies.myproducthunter.dataLayer.models;
+
+import android.graphics.Bitmap;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -87,6 +89,14 @@ public class Post {
         return url;
     }
 
+    public Bitmap getThumbnail_bitmap(){
+        return thumbnail.getImage();
+    }
+
+    public void setThumbnail_bitmap(Bitmap bitmap){
+        thumbnail.setImage(bitmap);
+    }
+
     @Override
     public String toString() {
         return "Post{" +
@@ -103,6 +113,7 @@ public class Post {
     private class Thumbnail{
         private int id;
         private String image_url;
+        private Bitmap image = null;
 
         Thumbnail(JSONObject obj){
             try {
@@ -124,6 +135,14 @@ public class Post {
 
         public String getImage_url() {
             return image_url;
+        }
+
+        public Bitmap getImage() {
+            return image;
+        }
+
+        public void setImage(Bitmap image) {
+            this.image = image;
         }
 
         @Override

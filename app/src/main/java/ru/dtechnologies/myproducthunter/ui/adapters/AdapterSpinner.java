@@ -1,4 +1,4 @@
-package ru.dtechnologies.myproducthunter;
+package ru.dtechnologies.myproducthunter.ui.adapters;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
@@ -11,20 +11,17 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
-import org.w3c.dom.Text;
-
 import java.util.ArrayList;
 import java.util.List;
 
-import ru.dtechnologies.myproducthunter.core.models.Category;
-
-/**
- * Created by Danila on 16.04.2017.
- */
+import ru.dtechnologies.myproducthunter.R;
+import ru.dtechnologies.myproducthunter.dataLayer.models.Category;
 
 public class AdapterSpinner extends ArrayAdapter<Category> {
     private ArrayList<Category> categories;
     private Context context;
+
+    // layouts для элементов списка spinner
     private int resource;
     private int resourceDropdown;
 

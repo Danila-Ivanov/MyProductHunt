@@ -1,4 +1,4 @@
-package ru.dtechnologies.myproducthunter;
+package ru.dtechnologies.myproducthunter.ui.views;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -6,9 +6,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 
-/**
- * Created by Danila on 16.04.2017.
- */
+import ru.dtechnologies.myproducthunter.R;
 
 public class WebviewActivity extends AppCompatActivity{
 

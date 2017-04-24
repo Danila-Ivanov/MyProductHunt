@@ -4,30 +4,37 @@ import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
-import android.app.VoiceInteractor;
 import android.content.Context;
 import android.content.Intent;
-import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
 import android.os.IBinder;
-import android.support.annotation.IntDef;
-import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
-import android.widget.ImageView;
 
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.util.ArrayList;
 
-import ru.dtechnologies.myproducthunter.core.Core;
-import ru.dtechnologies.myproducthunter.core.models.Post;
+import ru.dtechnologies.myproducthunter.dataLayer.Core;
+import ru.dtechnologies.myproducthunter.dataLayer.models.Post;
+import ru.dtechnologies.myproducthunter.ui.views.PostActivity;
 
 public class ServiceNotifications extends Service {
 
+    /**
+     * @param bitmap image thumbnail in format bitmap
+     */
     private Bitmap bitmap;
+
+    /**
+     * @param screenshot image screenshot for PostActivity in format bitmap
+     */
     private Bitmap screenshot;
+
+    /**
+     * @param NOTIFY_ID Id Notification
+     */
     private static final int NOTIFY_ID = 101;
 
     public ServiceNotifications() {
@@ -43,16 +50,25 @@ public class ServiceNotifications extends Service {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
+        // запускаем задачу
         new CheckNotifications().execute();
-        return START_STICKY;
+        return START_REDELIVER_INTENT;
     }
 
+    /**
+     * AsyncTask for get notification from server and create notification in device
+     */
     private class CheckNotifications extends AsyncTask<Void, Void, ArrayList<Post>>{
 
         @Override
         protected ArrayList<Post> doInBackground(Void... voids) {
+            // получаем данные с сервера
             ArrayList<Post> posts = new Core().getNotification();
+            Log.d("MyService", "posts = "+ posts);
+
             if (posts != null && posts.size() == 1){
+
+                // загружаем изображения
                 String urldisplay = posts.get(0).getThumbnail_image();
                 try {
                     InputStream in = new java.net.URL(urldisplay).openStream();
@@ -79,6 +95,7 @@ public class ServiceNotifications extends Service {
             super.onPostExecute(posts);
             if (posts != null && posts.size() != 0){
 
+                // создаём уведомление на устройстве
                 Intent notificationIntent = new Intent(ServiceNotifications.this, PostActivity.class);
                 PendingIntent contentIntent = PendingIntent.getActivity(ServiceNotifications.this,
                         0, notificationIntent,
@@ -124,6 +141,8 @@ public class ServiceNotifications extends Service {
                         .getSystemService(Context.NOTIFICATION_SERVICE);
                 notificationManager.notify(NOTIFY_ID, notification);
             }
+
+            // перезапускаем задачу
             new CheckNotifications().execute();
         }
     }

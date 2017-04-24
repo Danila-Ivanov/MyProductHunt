@@ -1,4 +1,4 @@
-package ru.dtechnologies.myproducthunter;
+package ru.dtechnologies.myproducthunter.ui.adapters;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
@@ -19,23 +19,25 @@ import android.widget.TextView;
 import java.io.InputStream;
 import java.util.ArrayList;
 
-import ru.dtechnologies.myproducthunter.core.models.Post;
-
-/**
- * Created by Danila on 16.04.2017.
- */
+import ru.dtechnologies.myproducthunter.R;
+import ru.dtechnologies.myproducthunter.dataLayer.models.Post;
+import ru.dtechnologies.myproducthunter.domainLayer.MainLogic;
 
 public class AdapterList extends ArrayAdapter<Post> {
 
     private ArrayList<Post> posts;
     private Context context;
+
+    // layout элемента списка posts
     private int resource;
+    private MainLogic mainLogic;
 
     public AdapterList(@NonNull Context context, @LayoutRes int resource, ArrayList<Post> posts) {
         super(context, resource, posts);
         this.posts = posts;
         this.context = context;
         this.resource = resource;
+        mainLogic = new MainLogic();
     }
 
 
@@ -45,44 +47,27 @@ public class AdapterList extends ArrayAdapter<Post> {
 
         LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         @SuppressLint("ViewHolder") View view = inflater.inflate(resource, null);
+
+        // находим элементы представления элемента списка posts
         TextView tvName = (TextView) view.findViewById(R.id.tvName);
         TextView tvDescription = (TextView) view.findViewById(R.id.tvDescription);
         TextView tvVoites = (TextView) view.findViewById(R.id.tvVoites);
         ImageView iv = (ImageView) view.findViewById(R.id.ivThumbnail);
 
+        // вставляем данные
         Post post = posts.get(position);
         tvName.setText(post.getName());
         tvDescription.setText(post.getTagline());
         tvVoites.setText(String.valueOf(post.getVotes_count()));
 
-        new DownloadImageTask(iv).execute(post.getThumbnail_image());
+        // загружаем thumbnail
+        if (post.getThumbnail_bitmap() != null){
+            iv.setImageBitmap(post.getThumbnail_bitmap());
+        } else {
+            mainLogic.getThumbnail(post, iv);
+        }
 
         return view;
-    }
-
-    private class DownloadImageTask extends AsyncTask<String, Void, Bitmap> {
-        ImageView bmImage;
-
-        public DownloadImageTask(ImageView bmImage) {
-            this.bmImage = bmImage;
-        }
-
-        protected Bitmap doInBackground(String... urls) {
-            String urldisplay = urls[0];
-            Bitmap mIcon11 = null;
-            try {
-                InputStream in = new java.net.URL(urldisplay).openStream();
-                mIcon11 = BitmapFactory.decodeStream(in);
-            } catch (Exception e) {
-                Log.e("Error", e.getMessage());
-                e.printStackTrace();
-            }
-            return mIcon11;
-        }
-
-        protected void onPostExecute(Bitmap result) {
-            bmImage.setImageBitmap(result);
-        }
     }
 
     @Nullable

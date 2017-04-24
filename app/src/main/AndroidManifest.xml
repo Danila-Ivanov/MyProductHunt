@@ -13,7 +13,8 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".MainActivity">
+        <activity android:name=".ui.views.MainActivity"
+            android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -21,15 +22,26 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".PostActivity"
+            android:name=".ui.views.PostActivity"
             android:label="@string/title_activity_post"
-            android:theme="@style/AppTheme" />
-        <activity android:name=".WebviewActivity" />
+            android:theme="@style/AppTheme"
+            android:screenOrientation="portrait"/>
+        <activity android:name=".ui.views.WebviewActivity" />
 
-        <service
-            android:name=".ServiceNotifications"
+        <service android:name=".ServiceNotifications"
+            android:enabled="true" />
+
+        <receiver
+            android:name=".ReseiverForStartService"
             android:enabled="true"
-            android:exported="true"></service>
+            android:permission="android.permission.RECEIVE_BOOT_COMPLETED">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+                <action android:name="android.intent.action.QUICKBOOT_POWERON" />
+                <action android:name="android.intent.action.REBOOT"/>
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </receiver>
     </application>
 
 </manifest>

@@ -6,4 +6,8 @@
     <string name="action_settings">Settings</string>
 
     <string name="btn_get_it">Get it</string>
+
+    <string name="tv_descript">O V E R V I E W</string>
+
+    <string name="no_internet">Check your connection to internet!</string>
 </resources>

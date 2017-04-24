@@ -1,4 +1,4 @@
-package ru.dtechnologies.myproducthunter.core;
+package ru.dtechnologies.myproducthunter.dataLayer;
 
 import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicNameValuePair;
@@ -11,16 +11,14 @@ import java.net.*;
 import java.util.ArrayList;
 import java.util.List;
 
-import ru.dtechnologies.myproducthunter.core.models.Category;
-import ru.dtechnologies.myproducthunter.core.models.Post;
+import ru.dtechnologies.myproducthunter.dataLayer.models.Category;
+import ru.dtechnologies.myproducthunter.dataLayer.models.Post;
 
-/**
- * Created by Danila on 15.04.2017.
- */
 public class Core implements ICore{
 
     @Override
     public ArrayList<Category> getCategories() {
+        // параметры отправляемые в запросе
         ArrayList<NameValuePair> params = new ArrayList<NameValuePair>();
         params.add(new BasicNameValuePair("access_token", ACCESS_TOKEN));
 
@@ -29,6 +27,7 @@ public class Core implements ICore{
         try {
             answer = GET(params, CATEGORIES_URL);
             if (answer != null){
+                // формирование массива сданными для ответа
                 JSONArray categories = answer.getJSONArray("categories");
                 for (int i = 0; i < categories.length(); i++){
                     arr.add(new Category(categories.getJSONObject(i)));
@@ -45,6 +44,7 @@ public class Core implements ICore{
 
     @Override
     public ArrayList<Post> getPostsToday(String slug) {
+        // параметры отправляемые в запросе
         ArrayList<NameValuePair> params = new ArrayList<NameValuePair>();
         params.add(new BasicNameValuePair("access_token", ACCESS_TOKEN));
 
@@ -53,6 +53,7 @@ public class Core implements ICore{
             ArrayList<Post> posts = new ArrayList<Post>();
             JSONObject answer = GET(params, CATEGORIES_URL + "/" + slug + "/posts");
             if (answer != null){
+                // формирование массива сданными для ответа
                 JSONArray arr = answer.getJSONArray("posts");
                 for(int i = 0; i < arr.length(); i++){
                     posts.add(new Post(arr.getJSONObject(i)));
@@ -69,13 +70,16 @@ public class Core implements ICore{
 
     @Override
     public ArrayList<Post> getNotification() {
+        // параметры отправляемые в запросе
         ArrayList<NameValuePair> params = new ArrayList<NameValuePair>();
         params.add(new BasicNameValuePair("access_token", ACCESS_TOKEN));
 
         try {
             ArrayList<Post> posts = new ArrayList<Post>();
             JSONObject answer = GET(params, NOTIFICATION_URL);
+
             if (answer != null){
+                // формирование массива сданными для ответа
                 JSONArray arr = answer.getJSONArray("notifications");
                 if (arr.length() == 1) {
                     for (int i = 0; i < arr.length(); i++) {
@@ -92,6 +96,12 @@ public class Core implements ICore{
         return null;
     }
 
+    /**
+     * Method for creating GET request
+     * @param params parameters Get request
+     * @return string parameters specially creating for using in GET request
+     * @throws UnsupportedEncodingException
+     */
     private String getQuery(List<NameValuePair> params) throws UnsupportedEncodingException {
         StringBuilder result = new StringBuilder();
         boolean first = true;
@@ -111,7 +121,16 @@ public class Core implements ICore{
         return result.toString();
     }
 
+    /**
+     *
+     * @param params parameters required for GET request
+     * @param url_s URL for request
+     * @return JSONObject with data
+     * @throws IOException
+     * @throws JSONException
+     */
     public JSONObject GET(List<NameValuePair> params, String url_s) throws IOException, JSONException {
+        // создаём полный url для запроса
         String createUrl = BASE_URL + url_s + "?" +getQuery(params);
         StringBuilder sb = new StringBuilder();
         try {
@@ -119,14 +138,16 @@ public class Core implements ICore{
             HttpURLConnection connection = (HttpURLConnection) url.openConnection();
             connection.setRequestMethod("GET");
             connection.setConnectTimeout(CONNECTION_TIMEOUT);
-            connection.setReadTimeout(CONNECTION_TIMEOUT);
+            connection.setReadTimeout(READING_TIMEOUT);
 
+            // устанавливаем свойства
             connection.addRequestProperty("Accept", "application/json");
             connection.addRequestProperty("Content-Type", "application/json");
             connection.addRequestProperty("Authorization", "Bearer " + ACCESS_TOKEN);
             connection.addRequestProperty("Host", "api.producthunt.com");
             connection.connect();
 
+            // получаем ответ
             BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream(), "UTF-8"));
             String line = null;
             while ((line = reader.readLine()) != null) {
@@ -136,6 +157,7 @@ public class Core implements ICore{
             reader.close();
         } catch (SocketTimeoutException e) {
             System.err.println(e.getMessage());
+            return null;
         }
 
         return new JSONObject(sb.toString());
